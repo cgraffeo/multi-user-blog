@@ -139,11 +139,6 @@ class User(db.Model):
         return db.Key.from_path('blogs', name)
 
 
-# Blog must include the following features:
-# Front page that lists blog posts.
-# A form to submit new entries.
-# Blog posts have their own page.
-
 class Post(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)

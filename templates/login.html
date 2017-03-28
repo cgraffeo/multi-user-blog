@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Login</h1>
+  <form method="post">
+    <div class="form-elements">
+      <label>Username</label>
+      <input type="text" name="username" value="{{username}}">
+      <label>Password</label>
+      <input type="password" name="password" value="">
+    </div>
+    <div class="error">
+      {{error}}
+    </div>
+    <button type="submit">Login</button>
+  </form>
+{% endblock %}
