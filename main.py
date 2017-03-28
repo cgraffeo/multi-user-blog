@@ -14,7 +14,7 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
-secret=secret
+secret = 'secret'
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 
@@ -48,6 +48,30 @@ def check_secure_val(secure_val):
     val = secure_val.split('|')[0]
     if secure_val == make_secure_val(val):
         return val
+
+
+def make_salt(length=5):
+    return ''.join(random.choice(letters) for x in xrange(length))
+
+
+def make_pw_hash(name, pw, salt=None):
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(name + pw + salt).hexdigest()
+    return '%s,%s' % (salt, h)
+
+
+def users_key(group='default'):
+    return db.Key.from_path('users', group)
+
+
+def blog_key(name='default'):
+    return db.Key.from_path('blogs', name)
+
+
+def valid_pw(name, password, h):
+    salt = h.split(',')[0]
+    return h == make_pw_hash(name, password, salt)
 
 
 class BlogHandler(webapp2.RequestHandler):
@@ -90,22 +114,6 @@ class HomePage(BlogHandler):
     def get(self):
         self.write('Hello!')
 
-    def make_salt(length=5):
-        return ''.join(random.choice(letters) for x in xrange(length))
-
-    def make_pw_hash(name, pw, salt=None):
-        if not salt:
-            salt = make_salt()
-        h = haslib.sha256(name + pw + salt).hexdigest()
-        return '%s,%s' % (salt, h)
-
-    def valid_pw(name, password, h):
-        salt = h.split(',')[0]
-        return h == make_pw_hash(name, password, salt)
-
-    def users_key(group='default'):
-        return db.Key.from_path('users', group)
-
 
 class User(db.Model):
     name = db.StringProperty(required=True)
@@ -135,14 +143,11 @@ class User(db.Model):
         if u and valid_pw(name, pw, u.pw_hash):
             return u
 
-    def blog_key(name='default'):
-        return db.Key.from_path('blogs', name)
-
 
 class Post(db.Model):
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_add_now=True)
+    created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
 
     def render(self):
@@ -198,7 +203,7 @@ class Signup(BlogHandler):
     def post(self):
         have_error = False
         self.username = self.request.get('username')
-        self.password = self.reqest.get('password')
+        self.password = self.request.get('password')
         self.verify = self.request.get('verify')
         self.email = self.request.get('email')
 
@@ -210,11 +215,14 @@ class Signup(BlogHandler):
 
         if not valid_password(self.password):
             params['error_password'] = "That is not a valid password"
+            have_errpr = True
         elif self.password != self.verify:
             params['error_verify'] = "Your passwords did not match"
+            have_error = True
 
         if not valid_email(self.email):
             params['error_email'] = "That is not a valid Email"
+            have_error = True
 
         if have_error:
             self.render('signup.html', **params)
@@ -253,13 +261,13 @@ class Login(BlogHandler):
             self.redirect('/blog')
         else:
             msg = 'Invalid Login'
-            self.render('login.thml', error=msg)
+            self.render('login.html', error=msg)
 
 
 class LogOut(BlogHandler):
     def get(self):
         self.logout()
-        self.render('blog')
+        self.redirect('/blog')
 
 
 class Welcome(BlogHandler):
@@ -270,6 +278,13 @@ class Welcome(BlogHandler):
             self.redirect('/signup')
 
 
-app = webapp2.WSGIApplication([('/', HomePage)
+app = webapp2.WSGIApplication([('/', HomePage),
+                              ('/welcome', Welcome),
+                              ('/blog?', BlogMain),
+                              ('/blog/([0-9]+)', PostPage),
+                              ('/blog/newpost', NewPost),
+                              ('/signup', Register),
+                              ('/login', Login),
+                              ('/logout', LogOut),
                                ],
                               debug=True)
