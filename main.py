@@ -112,7 +112,7 @@ class BlogHandler(webapp2.RequestHandler):
 
 class HomePage(BlogHandler):
     def get(self):
-        self.write('Hello!')
+        self.redirect('/blog')
 
 
 class User(db.Model):
