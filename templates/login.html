@@ -1,16 +1,21 @@
-{% extends "base.html" %}
-{% block content %}
-<h1>Login</h1>
-  <form method="post">
-    <div class="form-elements">
-      <label>Username</label>
-      <input type="text" name="username" value="{{username}}">
-      <label>Password</label>
-      <input type="password" name="password" value="">
-    </div>
-    <div class="error">
-      {{error}}
-    </div>
-    <button type="submit">Login</button>
-  </form>
+{% extends "base.html" %} {% block content %}
+<div class="card">
+    <h1>Login</h1>
+    <form class="form" method="post">
+        <div class="form-elements">
+            <div class="input-group">
+                <label>Username:</label>
+                <input type="text" name="username" value="{{username}}">
+            </div>
+            <div class="input-group">
+                <label>Password:</label>
+                <input type="password" name="password" value="">
+            </div>
+        </div>
+        <div class="error">
+            {{error}}
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
 {% endblock %}

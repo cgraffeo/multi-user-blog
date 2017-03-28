@@ -1,36 +1,38 @@
 {% extends "base.html" %} {% block content %}
-<h1> Signup</h1>
-<form method="post">
-    <div class="form-elements">
-        <div class="input-field">
-            <label>Username</label>
-            <input type="text" name="username" value={{username}}>
+<div class="card">
+    <h1> Signup</h1>
+    <form method="post">
+        <div class="signup-form-elements">
+            <div class="input-field">
+                <label class="signup-label">Username</label>
+                <input type="text" name="username" value={{username}}>
+            </div>
+            <div class="error">
+                {{error_username}}
+            </div>
+            <div class="input-field">
+                <label class="signup-label">Password</label>
+                <input type="password" name="password" value="">
+            </div>
+            <div class="error">
+                {{error_password}}
+            </div>
+            <div class="input-field">
+                <label class="signup-label">Verify Password</label>
+                <input type="password" name="verify" value="">
+            </div>
+            <div class="error">
+                {{error_verify}}
+            </div>
+            <div class="input-field">
+                <label class="signup-label">Email (optional)</label>
+                <input type="text" name="email" value="{{email}}">
+            </div>
+            <div class="error">
+                {{error_email}}
+            </div>
+            <button type="submit">Signup!</button>
         </div>
-        <div class="error">
-            {{error_username}}
-        </div>
-        <div class="input-field">
-            <label>Password</label>
-            <input type="password" name="password" value="">
-        </div>
-        <div class="error">
-            {{error_password}}
-        </div>
-        <div class="input-field">
-            <label>Verify Password</label>
-            <input type="password" name="verify" value="">
-        </div>
-        <div class="error">
-            {{error_verify}}
-        </div>
-        <div class="input-field">
-            <label>Email (optional)</label>
-            <input type="text" name="email" value="{{email}}">
-        </div>
-        <div class="error">
-            {{error_email}}
-        </div>
-        <button type="submit">Signup!</button>
-    </div>
-</form>
+    </form>
+</div>
 {% endblock %}

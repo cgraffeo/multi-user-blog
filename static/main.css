@@ -1,0 +1,113 @@
+html{
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+}
+body{
+  width: 100%;
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+/*  background: #212121;*/
+  background: #303030;
+  margin: 0;
+}
+a{
+  text-decoration: none;
+  color: #fff;
+}
+a:hover{
+  color: #1DE9B6;
+}
+.nav{
+  display: flex;
+  justify-content: space-around;
+  text-decoration: none;
+  background: #212121;
+  color: #fff;
+  height: 8%;
+  padding-top: 2em;
+  box-shadow: 2px 42px 12px 4px rgba(0,0,0,0.1);
+}
+.content{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #303030;
+}
+.card{
+  padding: 2em;
+  height: auto;
+  box-shadow: 2px 3px 12px 4px rgba(0,0,0,0.26);
+  background: #424242;
+  color: #fff;
+  margin-top: 6em;
+}
+.post{
+  background: #424242;
+  color: #fff;
+  height: auto;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 2em;
+  box-shadow: 2px 3px 12px 4px rgba(0,0,0,0.26);
+}
+.post-heading{
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2em;
+  /*border-bottom: 1px solid rgba(255,255,255, 0.5);*/
+}
+.hr-fix{
+    /*margin-bottom: 0;*/
+    margin-left: 9%;
+    width: 80%;
+    /*border: 0;*/
+    border-bottom: 1px solid rgba(255,255,255, 0.5); /* you may match this border with the right border of the <div>*/
+}
+.post-content{
+  margin-bottom: 2em;
+  margin-top: 2em;
+}
+.error{
+  font-weight: bold;
+  color: #D84315;
+  margin: 1em;
+}
+/*.form{
+  margin-bottom: 2em;
+}*/
+.form-elements{
+  display: flex;
+  justify-content: space-around;
+}
+.content-text{
+  height: 342px;
+  width: 512px;
+}
+.input-group{
+  margin-right: 2em;
+}
+.input-group-newpost{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2em;
+}
+.form-elements-newpost{
+  display: flex;
+  flex-direction: column;
+}
+.newpost-label{
+  padding-bottom: 1em;
+}
+.signup-label{
+  margin-right: 1em;
+}
+.signup-form-elements{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
