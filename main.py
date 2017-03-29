@@ -155,6 +155,7 @@ class Post(db.Model):
         return render_str('post.html', p=self)
 
 
+# New attempt to build a db model to store comments based on Post model
 class Comment(db.Model):
     comsubj = db.StringProperty
     combody = db.TextProperty
@@ -164,6 +165,10 @@ class Comment(db.Model):
     def render(self):
         self._render_text = self.combody.replace('\n', '</br>')
         return render_str('post.html', p=self)
+
+
+# Old attempt to build a db model to store comment information renamed "Joe"
+# in an attempt to see if data is being written to db
 
 # class Joe(db.Model):
 #     print(db.TextProperty())
@@ -226,6 +231,7 @@ class NewPost(BlogHandler):
                         error=error)
 
 
+# New attempt using newpost as a template.  Attempting to get anything to render
 class NewComment(BlogHandler):
     def get(self):
         if self.user:
@@ -250,6 +256,8 @@ class NewComment(BlogHandler):
             self.render('newcomment.html', comsubj=comsubj,
                         combody=combody,
                         error=error)
+
+# old attempt at building comment section on my own
 
 # class Comments(BlogHandler):
 #     def get(self):
