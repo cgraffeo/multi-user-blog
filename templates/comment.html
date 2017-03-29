@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+    <h1></h1>
+    <form class="form" method="post">
+        <div class="form-elements-newpost">
+        <div class="input-group-newpost">
+                <label class="newpost-label" name="name">{{user.name}}</label>
+                <!-- <input name="comment" value="{{user.name}}" name="name"> -->
+            </div>
+            <div class="input-group-newpost">
+                <label class="newpost-label">Comment:</label>
+                <textarea class="content-text" name="comment">{{comment}}</textarea>
+            </div>
+        </div>
+        <div class="error">
+            {{error}}
+        </div>
+        <button type="submit">Submit Comment</button>
+    </form>
+</div>
+{% endblock %}

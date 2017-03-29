@@ -155,6 +155,26 @@ class Post(db.Model):
         return render_str('post.html', p=self)
 
 
+class Joe(db.Model):
+    print(db.TextProperty())
+    # name = db.StringProperty(required=True)
+    comment = db.TextProperty(required=True)
+    # created = db.DateTimeProperty(auto_now_add=True)
+    # last_modified = db.DateTimeProperty(auto_now=True)
+    # @classmethod
+    # def by_id(cls, uid):
+    #     return User.get_by_id(uid, parent=users_key())
+
+    # @classmethod
+    # def by_name(cls, name):
+    #     u = User.all().filter('name =', name).get()
+    #     return u
+
+    # def render(self):
+    #     self._render_text = self.comment.replace('\n', '</br>')
+    #     return render_str('post.html', c=self)
+
+
 class BlogMain(BlogHandler):
     def get(self):
         posts = greetings = Post.all().order('-created')
@@ -194,6 +214,29 @@ class NewPost(BlogHandler):
             error = "New posts must contain a subject and content!"
             self.render('newpost.html', subject=subject, content=content,
                         error=error)
+
+
+class Comments(BlogHandler):
+    def get(self):
+        if self.user:
+            self.render('comment.html')
+        else:
+            self.redirect('/login')
+
+    def post(self):
+        if not self.user:
+            self.redirect('/blog')
+
+        comment = self.request.get('comment')
+        # name = self.request.get('name')
+
+        if comment:
+            c = Joe(comment=comment)
+            c.put()
+            self.redirect('/blog')
+        else:
+            error = "Must add a comment!"
+            self.render('comment.html', comment=comment, error=error)
 
 
 class Signup(BlogHandler):
@@ -283,6 +326,7 @@ app = webapp2.WSGIApplication([('/', HomePage),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
                               ('/blog/newpost', NewPost),
+                              ('/blog/comment', Comments),
                               ('/signup', Register),
                               ('/login', Login),
                               ('/logout', LogOut),
