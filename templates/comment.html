@@ -1,21 +1,18 @@
-{% extends "base.html" %} {% block content %}
-<div class="card">
-    <h1></h1>
-    <form class="form" method="post">
-        <div class="form-elements-newpost">
-        <div class="input-group-newpost">
-                <label class="newpost-label" name="name">{{user.name}}</label>
-                <!-- <input name="comment" value="{{user.name}}" name="name"> -->
-            </div>
-            <div class="input-group-newpost">
-                <label class="newpost-label">Comment:</label>
-                <textarea class="content-text" name="comment">{{comment}}</textarea>
-            </div>
+<div class="post">
+    <div class="post-heading">
+        <div class="post-title">
+            <a class="login-link" href="/blog/{{p.key().id()}}">{{p.comsubj}}</a>
         </div>
-        <div class="error">
-            {{error}}
+        <div class="post-date">
+            {{p.created.strftime("%b %d, %Y")}}
         </div>
-        <button type="submit">Submit Comment</button>
-    </form>
+    </div>
+    <hr class="hr-fix" />
+    <div class="post-content">
+        {{p._render_text | safe}}
+    </div>
+    <a href="/blog/comment">Add a comment</a>
+    <!-- {% for p in comments %} {{ p._render_text | safe}}
+    <br></br>
+    {% endfor %} -->
 </div>
-{% endblock %}

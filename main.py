@@ -145,8 +145,8 @@ class User(db.Model):
 
 
 class Post(db.Model):
-    subject = db.StringProperty(required=True)
-    content = db.TextProperty(required=True)
+    subject = db.StringProperty
+    content = db.TextProperty
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
 
@@ -155,10 +155,20 @@ class Post(db.Model):
         return render_str('post.html', p=self)
 
 
-class Joe(db.Model):
-    print(db.TextProperty())
+class Comment(db.Model):
+    comsubj = db.StringProperty
+    combody = db.TextProperty
+    created = db.DateTimeProperty(auto_now_add=True)
+    last_modified = db.DateTimeProperty(auto_now=True)
+
+    def render(self):
+        self._render_text = self.combody.replace('\n', '</br>')
+        return render_str('post.html', p=self)
+
+# class Joe(db.Model):
+#     print(db.TextProperty())
     # name = db.StringProperty(required=True)
-    comment = db.TextProperty(required=True)
+    # comment = db.TextProperty(required=True)
     # created = db.DateTimeProperty(auto_now_add=True)
     # last_modified = db.DateTimeProperty(auto_now=True)
     # @classmethod
@@ -216,10 +226,10 @@ class NewPost(BlogHandler):
                         error=error)
 
 
-class Comments(BlogHandler):
+class NewComment(BlogHandler):
     def get(self):
         if self.user:
-            self.render('comment.html')
+            self.render('newcomment.html')
         else:
             self.redirect('/login')
 
@@ -227,16 +237,41 @@ class Comments(BlogHandler):
         if not self.user:
             self.redirect('/blog')
 
-        comment = self.request.get('comment')
-        # name = self.request.get('name')
+        comsubj = self.request.get('comsubj')
+        combody = self.request.get('combody')
 
-        if comment:
-            c = Joe(comment=comment)
-            c.put()
-            self.redirect('/blog')
+        if comsubj and combody:
+            p = Comment(parent=blog_key(), comsubj=comsubj,
+                        combody=combody)
+            p.put()
+            self.redirect('/blog/%s' % str(p.key().id()))
         else:
-            error = "Must add a comment!"
-            self.render('comment.html', comment=comment, error=error)
+            error = "New comments must contain a subject and content!"
+            self.render('newcomment.html', comsubj=comsubj,
+                        combody=combody,
+                        error=error)
+
+# class Comments(BlogHandler):
+#     def get(self):
+#         if self.user:
+#             self.render('comment.html')
+#         else:
+#             self.redirect('/login')
+
+#     def post(self):
+#         if not self.user:
+#             self.redirect('/blog')
+
+#         comment = self.request.get('comment')
+#         # name = self.request.get('name')
+
+#         if comment:
+#             c = Joe(comment=comment)
+#             c.put()
+#             self.redirect('/blog')
+#         else:
+#             error = "Must add a comment!"
+#             self.render('comment.html', comment=comment, error=error)
 
 
 class Signup(BlogHandler):
@@ -326,7 +361,7 @@ app = webapp2.WSGIApplication([('/', HomePage),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
                               ('/blog/newpost', NewPost),
-                              ('/blog/comment', Comments),
+                              ('/blog/comment', NewComment),
                               ('/signup', Register),
                               ('/login', Login),
                               ('/logout', LogOut),
