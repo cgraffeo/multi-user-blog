@@ -247,16 +247,26 @@ class NewComment(BlogHandler):
         combody = self.request.get('combody')
 
         if comsubj and combody:
-            p = Comment(parent=blog_key(), comsubj=comsubj,
+            c = Comment(parent=blog_key(), comsubj=comsubj,
                         combody=combody)
             p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            self.redirect('/blog/%s' % str(c.key().id()))
         else:
             error = "New comments must contain a subject and content!"
             self.render('newcomment.html', comsubj=comsubj,
                         combody=combody,
                         error=error)
 
+
+class CommentPage(BlogHandler):
+    def get(self, comment_id):
+        key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+        comment = db.get(key)
+
+        if not comment:
+            self.error(404)
+            return
+        self.render('commentpermalink.html', comment=comment)
 # old attempt at building comment section on my own
 
 # class Comments(BlogHandler):

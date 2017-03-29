@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+  {{comment.render() | safe}}
+  <div class="return">
+    <a href="/blog"> Return to Blog Feed </a>
+  </div>
+{% endblock %}
