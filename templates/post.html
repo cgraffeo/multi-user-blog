@@ -12,7 +12,12 @@
         {{p._render_text | safe}}
     </div>
     <a href="/blog/{{p.key().id()}}/comment">Add a comment</a>
-    {% for c in comments %} {{ c.combody | safe}}
+    <hr class=hr-fix />
+    {% for c in comments %}
+    <div class="comment-content">
+      <h3>{{c.username}}</h3>
+    {{ c.combody | safe}}
+    </div>
     <br></br>
     {% endfor %}
 </div>

@@ -162,9 +162,7 @@ class Comment(db.Model):
     last_modified = db.DateTimeProperty(auto_now=True)
     post_id = db.IntegerProperty()
     username = db.StringProperty()
-    # def render(self):
-    #     self._render_text = self.combody.replace('\n', '</br>')
-    #     return render_str('post.html', p=self)
+    current_user = db.StringProperty()
 
 
 class BlogMain(BlogHandler):
@@ -197,6 +195,7 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
+        username = self.user.name
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content)
@@ -224,9 +223,11 @@ class NewComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id),
                                parent=blog_key())
         post = db.get(key)
-        # user_id = db.get(self.user.id())
-        self.username = self.request.get('username')
-        username = name
+        # uid = db.get_by_id(uid, parent=users_key())
+        # user_id = self.user.user_id
+        uid = self.read_secure_cookie('user_id')
+        current_user = User.by_id(int(uid))
+        username = self.user.name
 
         if not post:
             self.error(404)
@@ -234,7 +235,7 @@ class NewComment(BlogHandler):
         if combody:
             c = Comment(parent=blog_key(),
                         combody=combody, post_id=int(post_id),
-                        username=username)
+                        username=username, current_user=str(current_user))
             c.put()
             self.redirect('/blog/%s' % str(post_id))
         else:
@@ -336,6 +337,9 @@ class Welcome(BlogHandler):
         else:
             self.redirect('/signup')
 
+# class Edit(BlogHandler):
+#     def get(self):
+#         if self.user = user.name:
 
 app = webapp2.WSGIApplication([('/', HomePage),
                               ('/welcome', Welcome),
