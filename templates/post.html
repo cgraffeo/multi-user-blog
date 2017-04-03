@@ -11,8 +11,8 @@
     <div class="post-content">
         {{p._render_text | safe}}
     </div>
-    <a href="/blog/comment">Add a comment</a>
-    {% for c in comments %} {{ c._render_text | safe}}
+    <a href="/blog/{{p.key().id()}}/comment">Add a comment</a>
+    {% for c in comments %} {{ c.combody | safe}}
     <br></br>
     {% endfor %}
 </div>

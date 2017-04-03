@@ -145,49 +145,26 @@ class User(db.Model):
 
 
 class Post(db.Model):
-    subject = db.StringProperty
-    content = db.TextProperty
+    subject = db.StringProperty()
+    content = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
 
     def render(self):
         self._render_text = self.content.replace('\n', '</br>')
-        return render_str('post.html', p=self)
+        comments = Comment.all().filter('post_id =', self.key().id())
+        return render_str('post.html', p=self, comments=comments)
 
 
-# New attempt to build a db model to store comments based on Post model
 class Comment(db.Model):
-    comsubj = db.StringProperty
-    combody = db.TextProperty
+    combody = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
-
-    def render(self):
-        self._render_text = self.combody.replace('\n', '</br>')
-        return render_str('post.html', p=self)
-
-
-# Old attempt to build a db model to store comment information renamed "Joe"
-# in an attempt to see if data is being written to db
-
-# class Joe(db.Model):
-#     print(db.TextProperty())
-    # name = db.StringProperty(required=True)
-    # comment = db.TextProperty(required=True)
-    # created = db.DateTimeProperty(auto_now_add=True)
-    # last_modified = db.DateTimeProperty(auto_now=True)
-    # @classmethod
-    # def by_id(cls, uid):
-    #     return User.get_by_id(uid, parent=users_key())
-
-    # @classmethod
-    # def by_name(cls, name):
-    #     u = User.all().filter('name =', name).get()
-    #     return u
-
+    post_id = db.IntegerProperty()
+    username = db.StringProperty()
     # def render(self):
-    #     self._render_text = self.comment.replace('\n', '</br>')
-    #     return render_str('post.html', c=self)
+    #     self._render_text = self.combody.replace('\n', '</br>')
+    #     return render_str('post.html', p=self)
 
 
 class BlogMain(BlogHandler):
@@ -231,29 +208,38 @@ class NewPost(BlogHandler):
                         error=error)
 
 
-# New attempt using newpost as a template.  Attempting to get anything to render
 class NewComment(BlogHandler):
-    def get(self):
+    def get(self, post_id):
         if self.user:
             self.render('newcomment.html')
         else:
             self.redirect('/login')
 
-    def post(self):
+    def post(self, post_id):
         if not self.user:
             self.redirect('/blog')
 
-        comsubj = self.request.get('comsubj')
         combody = self.request.get('combody')
 
-        if comsubj and combody:
-            c = Comment(parent=blog_key(), comsubj=comsubj,
-                        combody=combody)
-            p.put()
-            self.redirect('/blog/%s' % str(c.key().id()))
+        key = db.Key.from_path('Post', int(post_id),
+                               parent=blog_key())
+        post = db.get(key)
+        # user_id = db.get(self.user.id())
+        self.username = self.request.get('username')
+        username = name
+
+        if not post:
+            self.error(404)
+            return
+        if combody:
+            c = Comment(parent=blog_key(),
+                        combody=combody, post_id=int(post_id),
+                        username=username)
+            c.put()
+            self.redirect('/blog/%s' % str(post_id))
         else:
             error = "New comments must contain a subject and content!"
-            self.render('newcomment.html', comsubj=comsubj,
+            self.render('newcomment.html',
                         combody=combody,
                         error=error)
 
@@ -267,29 +253,6 @@ class CommentPage(BlogHandler):
             self.error(404)
             return
         self.render('commentpermalink.html', comment=comment)
-# old attempt at building comment section on my own
-
-# class Comments(BlogHandler):
-#     def get(self):
-#         if self.user:
-#             self.render('comment.html')
-#         else:
-#             self.redirect('/login')
-
-#     def post(self):
-#         if not self.user:
-#             self.redirect('/blog')
-
-#         comment = self.request.get('comment')
-#         # name = self.request.get('name')
-
-#         if comment:
-#             c = Joe(comment=comment)
-#             c.put()
-#             self.redirect('/blog')
-#         else:
-#             error = "Must add a comment!"
-#             self.render('comment.html', comment=comment, error=error)
 
 
 class Signup(BlogHandler):
@@ -379,7 +342,7 @@ app = webapp2.WSGIApplication([('/', HomePage),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
                               ('/blog/newpost', NewPost),
-                              ('/blog/comment', NewComment),
+                              ('/blog/([0-9]+)/comment', NewComment),
                               ('/signup', Register),
                               ('/login', Login),
                               ('/logout', LogOut),
