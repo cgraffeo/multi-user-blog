@@ -2,6 +2,7 @@
     <div class="post-heading">
         <div class="post-title">
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
+            <p class="author">Author: {{p.username}}</p>
         </div>
         <div class="post-date">
             {{p.created.strftime("%b %d, %Y")}}
@@ -11,7 +12,7 @@
     <div class="post-content">
         {{p._render_text | safe}}
     </div>
-    <a href="/blog/{{p.key().id()}}/comment">Add a comment</a>
+    <a class="add-comment" href="/blog/{{p.key().id()}}/comment">Add a comment</a>
     <hr class=hr-fix />
     {% for c in comments %}
     <div class="comment-content">

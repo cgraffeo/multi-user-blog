@@ -149,6 +149,7 @@ class Post(db.Model):
     content = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
+    username = db.StringProperty()
 
     def render(self):
         self._render_text = self.content.replace('\n', '</br>')
@@ -198,7 +199,8 @@ class NewPost(BlogHandler):
         username = self.user.name
 
         if subject and content:
-            p = Post(parent=blog_key(), subject=subject, content=content)
+            p = Post(parent=blog_key(), subject=subject, content=content,
+                     username=username)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:

@@ -18,6 +18,11 @@ a{
 a:hover{
   color: #1DE9B6;
 }
+.add-comment{
+  width: 14%;
+  font-size: x-small;
+  align-self: flex-end;
+}
 .nav{
   display: flex;
   justify-content: space-around;
@@ -68,6 +73,14 @@ a:hover{
   justify-content: space-around;
   margin-top: 2em;
   /*border-bottom: 1px solid rgba(255,255,255, 0.5);*/
+}
+.post-title{
+  display: flex;
+  flex-direction: column;
+}
+.author{
+  margin-top: 0;
+  font-size: x-small;
 }
 .hr-fix{
     /*margin-bottom: 0;*/
