@@ -22,6 +22,7 @@ a:hover{
   width: 14%;
   font-size: x-small;
   align-self: flex-end;
+  padding-right: 74px;
 }
 .nav{
   display: flex;
