@@ -2,10 +2,8 @@
     <div class="post-heading">
         <div class="post-title">
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
-            <p class="author">Author: {{p.username}}</p>
-            {% if canEdit == True %}
-            <a href="/blog/{{p.key().id()}}/edit">Edit Post</a>
-            {% endif %}
+            <p class="author">Author: {{p.author}}</p>
+            <a href="/blog/{{p.key().id()}}/editpost">Edit Post</a>
         </div>
         <div class="post-date">
             {{p.created.strftime("%b %d, %Y")}}
@@ -19,7 +17,7 @@
     <hr class=hr-fix />
     {% for c in comments %}
     <div class="comment-content">
-      <h3>{{c.username}}</h3>
+      <h3>{{c.author}}</h3>
     {{ c.combody | safe}}
     </div>
     <br></br>

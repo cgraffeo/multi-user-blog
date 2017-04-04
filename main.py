@@ -145,11 +145,11 @@ class User(db.Model):
 
 
 class Post(db.Model):
-    subject = db.StringProperty()
-    content = db.StringProperty()
+    subject = db.StringProperty(required=True)
+    content = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
-    username = db.ReferenceProperty(User)
+    author = db.StringProperty(required=True)
 
     def render(self):
         self._render_text = self.content.replace('\n', '</br>')
@@ -158,11 +158,11 @@ class Post(db.Model):
 
 
 class Comment(db.Model):
-    combody = db.StringProperty()
+    combody = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
     post_id = db.IntegerProperty()
-    username = db.ReferenceProperty(User)
+    author = db.StringProperty(required=True)
 
 
 class BlogMain(BlogHandler):
@@ -175,15 +175,16 @@ class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
-        canEdit = False
+        # canEdit = False
 
-        if self.user == post.username:
-            canEdit = True
+        # if self.user == Post.username:
+        #     canEdit = True
 
         if not post:
             self.error(404)
             return
-        self.render('permalink.html', post=post, canEdit=canEdit)
+
+        self.render('permalink.html', post=post)
 
 
 class NewPost(BlogHandler):
@@ -199,18 +200,52 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
-        name = self.request.cookies.get('name')
-        username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" % name).get()
+        # name = self.request.cookies.get('name')
+        # username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" %
+        #                        name).get()
+        author = self.request.get('author')
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content,
-                     username=username)
+                     author=author)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
             error = "New posts must contain a subject and content!"
             self.render('newpost.html', subject=subject, content=content,
                         error=error)
+
+
+class PostEdit(BlogHandler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            author = post.author
+            currentUser = self.user.name
+
+        if author == currentUser:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+            self.render('editpost.html', subject=post.subject,
+                        content=post.content)
+        else:
+            error = "You must be the author of this post to edit"
+            self.render('blogmain.html',
+                        error=error)
+
+    def post(self, post_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            p = db.get(key)
+            p.subject = self.request.get('subject')
+            p.content = self.request.get('content')
+            p.put()
+            self.redirect('/blog/%s' % str(p.key().id()))
 
 
 class NewComment(BlogHandler):
@@ -229,8 +264,10 @@ class NewComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id),
                                parent=blog_key())
         post = db.get(key)
-        name = self.request.cookies.get('name')
-        username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" % name).get()
+        # name = self.request.cookies.get('name')
+        # username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" %
+        #                        name).get()
+        author = self.request.get('author')
 
         if not post:
             self.error(404)
@@ -238,7 +275,7 @@ class NewComment(BlogHandler):
         if combody:
             c = Comment(parent=blog_key(),
                         combody=combody, post_id=int(post_id),
-                        username=username, current_user=str(current_user))
+                        author=author)
             c.put()
             self.redirect('/blog/%s' % str(post_id))
         else:
@@ -341,18 +378,11 @@ class Welcome(BlogHandler):
             self.redirect('/signup')
 
 
-class Edit(BlogHandler):
-    def get(self):
-        if self.user == post.username:
-            self.render('editpost.html')
-        else:
-            self.render('post.html')
-
 app = webapp2.WSGIApplication([('/', HomePage),
                               ('/welcome', Welcome),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
-                              ('/blog/([0-9]+)/edit', Edit),
+                              ('/blog/([0-9]+)/editpost', PostEdit),
                               ('/blog/newpost', NewPost),
                               ('/blog/([0-9]+)/comment', NewComment),
                               ('/signup', Register),

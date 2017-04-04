@@ -4,7 +4,7 @@
     <form class="form" method="post">
         <div class="form-elements-newpost">
             <div class="input-group-newpost">
-              <!--   <label class="newpost-label">Subject</label> -->{{username}}
+                <input type="hidden" name="author" value="{{user.name}}">
             </div>
             <div class="input-group-newpost">
                 <label class="newpost-label">Content</label>

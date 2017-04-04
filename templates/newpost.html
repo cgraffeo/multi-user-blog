@@ -11,6 +11,7 @@
                 <label class="newpost-label">Content</label>
                 <textarea class="content-text" name="content">{{content}}</textarea>
             </div>
+            <input type="hidden" name="author" value="{{user.name}}">
         </div>
         <div class="error">
             {{error}}
