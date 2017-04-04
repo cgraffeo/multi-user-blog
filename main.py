@@ -149,7 +149,7 @@ class Post(db.Model):
     content = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
-    username = db.StringProperty()
+    username = db.ReferenceProperty(User)
 
     def render(self):
         self._render_text = self.content.replace('\n', '</br>')
@@ -162,8 +162,7 @@ class Comment(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
     post_id = db.IntegerProperty()
-    username = db.StringProperty()
-    current_user = db.StringProperty()
+    username = db.ReferenceProperty(User)
 
 
 class BlogMain(BlogHandler):
@@ -176,11 +175,15 @@ class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
+        canEdit = False
+
+        if self.user == post.username:
+            canEdit = True
 
         if not post:
             self.error(404)
             return
-        self.render('permalink.html', post=post)
+        self.render('permalink.html', post=post, canEdit=canEdit)
 
 
 class NewPost(BlogHandler):
@@ -196,7 +199,8 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
-        username = self.user.name
+        name = self.request.cookies.get('name')
+        username = db.GqlQuery()  # return user object
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content,
@@ -339,14 +343,19 @@ class Welcome(BlogHandler):
         else:
             self.redirect('/signup')
 
-# class Edit(BlogHandler):
-#     def get(self):
-#         if self.user = user.name:
+
+class Edit(BlogHandler):
+    def get(self):
+        if self.user == post.username:
+            self.render('editpost.html')
+        else:
+            self.render('post.html')
 
 app = webapp2.WSGIApplication([('/', HomePage),
                               ('/welcome', Welcome),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
+                              ('/blog/([0-9]+)/edit', Edit),
                               ('/blog/newpost', NewPost),
                               ('/blog/([0-9]+)/comment', NewComment),
                               ('/signup', Register),
