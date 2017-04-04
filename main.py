@@ -200,7 +200,7 @@ class NewPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
         name = self.request.cookies.get('name')
-        username = db.GqlQuery()  # return user object
+        username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" % name).get()
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content,
@@ -229,11 +229,8 @@ class NewComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id),
                                parent=blog_key())
         post = db.get(key)
-        # uid = db.get_by_id(uid, parent=users_key())
-        # user_id = self.user.user_id
-        uid = self.read_secure_cookie('user_id')
-        current_user = User.by_id(int(uid))
-        username = self.user.name
+        name = self.request.cookies.get('name')
+        username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" % name).get()
 
         if not post:
             self.error(404)

@@ -3,7 +3,7 @@
         <div class="post-title">
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
             <p class="author">Author: {{p.username}}</p>
-            {% if canEdit = True %}
+            {% if canEdit == True %}
             <a href="/blog/{{p.key().id()}}/edit">Edit Post</a>
             {% endif %}
         </div>
