@@ -246,23 +246,62 @@ class PostEdit(BlogHandler):
 
 
 class CommentEdit(BlogHandler):
-    def get(self, post_id, comment_id):
-        post = Post.get_by_id(int(post_id), parent=blog_key())
-        comment = Comment.get_by_id(int(comment_id),
-                                    parent=self.user.key())
-        if comment:
-            self.render('commentedit.html', subject=post.subject,
-                        content=post.content, combody=comment.combody)
+    def get(self, comment_id):
+        if not self.user:
+            self.redirect('/login')
         else:
-            error = 'Sorry, there was an error editing the comment, please try again later'
-            self.render('blogmain.html', error=error)
+            key = db.Key.from_path('Post', int(comment_id),
+                                   parent=blog_key())
+            post = db.get(key)
+            author = post.author
+            currentUser = self.user.name
+            combody = self.request.get('combody')
 
-    def post(self, post_id, comment_id):
-        comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
-        if c.parent().key().id() == self.user.id():
-            c.combody = self.request('combody')
+            if author == currentUser:
+                key = db.Key.from_path('Post', int(comment_id),
+                                       parent=blog_key())
+                post = db.get(key)
+                self.render('editcomment.html', combody=combody)
+            else:
+                error = "You must be the author of this comment to edit"
+                self.render('blogmain.html',
+                            error=error)
+
+    def post(self, comment_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            # key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
+            # c = db.get(key)
+            # c.combody = self.request.get('combody')
+            key = db.Key.from_path('Post', int(comment_id),
+                                   parent=blog_key())
+            post = db.get(key)
+            author = comment.author
+            combody = self.request.get('combody')
+            c = Comment(parent=blog_key(),
+                        combody=combody, post_id=int(comment_id),
+                        author=author)
             c.put()
-        self.redirect('/blog/%s' % str(post_id))
+            self.redirect('/blog/%s' % str(comment_id))
+# class CommentEdit(BlogHandler):
+#     def get(self, post_id, comment_id):
+#         post = Post.get_by_id(int(post_id), parent=blog_key())
+#         comment = Comment.get_by_id(int(comment_id),
+#                                     parent=self.user.key())
+#         if comment:
+#             self.render('commentedit.html', subject=post.subject,
+#                         content=post.content, combody=comment.combody)
+#         else:
+#             error = 'Sorry, there was an error editing the comment, please try again later'
+#             self.render('blogmain.html', error=error)
+
+#     def post(self, post_id, comment_id):
+#         comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
+#         if c.parent().key().id() == self.user.id():
+#             c.combody = self.request('combody')
+#             c.put()
+#         self.redirect('/blog/%s' % str(post_id))
 
 
 class NewComment(BlogHandler):
