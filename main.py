@@ -273,15 +273,6 @@ class CommentEdit(BlogHandler):
             c.combody = self.request.get('combody')
             c.put()
             self.redirect('/blog/%s' % str(comment_id))
-            # key = db.Key.from_path('Comment', int(comment_id), parent=blog_key())
-            # c = db.get(key)
-            # c.combody = self.request.get('combody')
-            # author = comment.author.id()
-            # c = Comment(parent=blog_key(),
-            #             combody=combody, post_id=int(comment_id),
-            #             author=author)
-            # c.put()
-                # self.redirect('/blog/%s' % str(comment_id))
 
 
 class NewComment(BlogHandler):
