@@ -226,15 +226,15 @@ class PostEdit(BlogHandler):
             author = post.author
             currentUser = self.user.name
 
-        if author == currentUser:
-            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-            post = db.get(key)
-            self.render('editpost.html', subject=post.subject,
-                        content=post.content)
-        else:
-            error = "You must be the author of this post to edit"
-            self.render('blogmain.html',
-                        error=error)
+            if author == currentUser:
+                key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+                post = db.get(key)
+                self.render('editpost.html', subject=post.subject,
+                            content=post.content)
+            else:
+                error = "You must be the author of this post to edit"
+                self.render('blogmain.html',
+                            error=error)
 
     def post(self, post_id):
         if not self.user:
