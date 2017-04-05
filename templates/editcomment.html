@@ -1,11 +1,8 @@
 {% extends "base.html" %} {% block content %}
 <div class="card">
-    <h1>New Comment</h1>
+    <h1>Edit Comment</h1>
     <form class="form" method="post">
         <div class="form-elements-newpost">
-            <div class="input-group-newpost">
-                <input type="hidden" name="author" value="{{user.name}}">
-            </div>
             <div class="input-group-newpost">
                 <label class="newpost-label">Content</label>
                 <textarea class="content-text" name="combody">{{combody}}</textarea>
@@ -14,7 +11,7 @@
         <div class="error">
             {{error}}
         </div>
-        <button type="submit">Add Comment</button>
+        <button type="submit">Edit Comment</button>
     </form>
 </div>
 {% endblock %}

@@ -200,9 +200,6 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
-        # name = self.request.cookies.get('name')
-        # username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" %
-        #                        name).get()
         author = self.request.get('author')
 
         if subject and content:
@@ -248,6 +245,26 @@ class PostEdit(BlogHandler):
             self.redirect('/blog/%s' % str(p.key().id()))
 
 
+class CommentEdit(BlogHandler):
+    def get(self, post_id, comment_id):
+        post = Post.get_by_id(int(post_id), parent=blog_key())
+        comment = Comment.get_by_id(int(comment_id),
+                                    parent=self.user.key())
+        if comment:
+            self.render('commentedit.html', subject=post.subject,
+                        content=post.content, combody=comment.combody)
+        else:
+            error = 'Sorry, there was an error editing the comment, please try again later'
+            self.render('blogmain.html', error=error)
+
+    def post(self, post_id, comment_id):
+        comment = Comment.get_by_id(int(comment_id), parent=self.user.key())
+        if c.parent().key().id() == self.user.id():
+            c.combody = self.request('combody')
+            c.put()
+        self.redirect('/blog/%s' % str(post_id))
+
+
 class NewComment(BlogHandler):
     def get(self, post_id):
         if self.user:
@@ -264,9 +281,6 @@ class NewComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id),
                                parent=blog_key())
         post = db.get(key)
-        # name = self.request.cookies.get('name')
-        # username = db.GqlQuery("SELECT * FROM User WHERE name in ('%s')" %
-        #                        name).get()
         author = self.request.get('author')
 
         if not post:
@@ -385,6 +399,7 @@ app = webapp2.WSGIApplication([('/', HomePage),
                               ('/blog/([0-9]+)/editpost', PostEdit),
                               ('/blog/newpost', NewPost),
                               ('/blog/([0-9]+)/comment', NewComment),
+                              ('/blog/([0-9]+)/editcomment', CommentEdit),
                               ('/signup', Register),
                               ('/login', Login),
                               ('/logout', LogOut),
