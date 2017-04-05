@@ -24,6 +24,10 @@ a:hover{
   align-self: flex-end;
   padding-right: 74px;
 }
+.comment-content{
+  display: flex;
+  flex-direction: column;
+}
 .nav{
   display: flex;
   justify-content: space-around;

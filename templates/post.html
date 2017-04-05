@@ -19,7 +19,7 @@
     <div class="comment-content">
       <h3>{{c.author}}</h3>
     {{ c.combody | safe}}
-    <a href="/blog/{{p.key().id()}}/editcomment">Edit Comment</a>
+    <a class="add-comment" href="/blog/{{p.key().id()}}/editcomment">Edit Comment</a>
     </div>
     <br></br>
     {% endfor %}
