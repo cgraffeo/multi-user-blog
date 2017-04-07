@@ -3,6 +3,7 @@ import re
 import random
 import hashlib
 import hmac
+import time
 from string import letters
 
 import webapp2
@@ -159,7 +160,7 @@ class Post(db.Model):
 
 
 class Comment(db.Model):
-    combody = db.StringProperty(required=True)
+    combody = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
     post_id = db.IntegerProperty()
@@ -216,6 +217,7 @@ class PostEdit(BlogHandler):
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
+            print("POST ID HERE1111111:", post_id)
             author = post.author
             currentUser = self.user.name
 
@@ -249,6 +251,7 @@ class CommentEdit(BlogHandler):
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             comment = db.get(key)
+            print("COMMENT ID HERE111111111:", comment_id)
             author = comment.author
             currentUser = self.user.name
             combody = self.request.get('combody')
@@ -272,7 +275,9 @@ class CommentEdit(BlogHandler):
             c = db.get(key)
             c.combody = self.request.get('combody')
             c.put()
-            self.redirect('/blog/%s' % str(comment_id))
+            time.sleep(0.1)
+
+            self.redirect('/blog')
 
 
 class NewComment(BlogHandler):
