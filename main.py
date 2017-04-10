@@ -21,6 +21,9 @@ secret = 'secret'
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 
 
+# Defining global variables
+
+
 def valid_username(username):
     return username and USER_RE.match(username)
 
@@ -76,6 +79,9 @@ def valid_pw(name, password, h):
     return h == make_pw_hash(name, password, salt)
 
 
+# Setting up bloghandler
+
+
 class BlogHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
@@ -116,6 +122,8 @@ class HomePage(BlogHandler):
     def get(self):
         self.redirect('/blog')
 
+
+# Building Database Models
 
 class User(db.Model):
     name = db.StringProperty(required=True)
@@ -168,6 +176,8 @@ class Comment(db.Model):
     post_id = db.IntegerProperty()
     author = db.StringProperty(required=True)
 
+
+# Begin basic blog functionality
 
 class BlogMain(BlogHandler):
     def get(self):
@@ -476,6 +486,9 @@ class Welcome(BlogHandler):
             self.render('welcome.html', username=self.user.name)
         else:
             self.redirect('/signup')
+
+
+# App routing
 
 
 app = webapp2.WSGIApplication([('/', HomePage),
