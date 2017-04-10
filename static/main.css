@@ -30,6 +30,7 @@ a:hover{
 .upvote{
   display: flex;
   align-items: center;
+  flex-basis: 11%;
   margin-right: 21em;
   margin-left: 6em;
 }
