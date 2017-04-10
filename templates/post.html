@@ -2,34 +2,38 @@
     <div class="post-heading">
         <div class="post-title">
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
-            <p class="author">Author: {{p.author}}</p>
-              <a href="/blog/{{p.key().id()}}/editpost">Edit Post</a>
-              <a href="/blog/{{p.key().id()}}/deletepost">Delete Post</a>
+            <p class="author color-mute">Author: {{p.author}}</p>
         </div>
         <div class="post-date">
             {{p.created.strftime("%b %d, %Y")}}
         </div>
+        <div>
+            <a class="post-edit color-mute" href="/blog/{{p.key().id()}}/editpost">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </a>
+            <a class="post-edit color-mute" href="/blog/{{p.key().id()}}/deletepost">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+        </div>
     </div>
     <hr class="hr-fix" />
     <div class="post-content">
-      <div class="upvote">
-        <a class="like-post" href="/blog/{{p.key().id()}}/likepost">
-          <i class="fa fa-chevron-circle-up" aria-hidden="true"></i>
-        </a>
-        <p>{{p.likes}}</p>
-      </div>
-      <div class="post-text">
-        {{p._render_text | safe}}
-      </div>
+        <div class="upvote">
+            <a class="like-post color-mute" href="/blog/{{p.key().id()}}/likepost">
+                <i class="fa fa-chevron-circle-up" aria-hidden="true"></i>
+            </a>
+            <p class="color-mute">{{p.likes}}</p>
+        </div>
+        <div class="post-text">
+            {{p._render_text | safe}}
+        </div>
     </div>
-    <a class="add-comment" href="/blog/{{p.key().id()}}/comment">Add a comment</a>
-    <hr class=hr-fix />
-    {% for c in comments %}
+    <a class="add-comment color-mute" href="/blog/{{p.key().id()}}/comment">Add a comment</a>
+    <hr class=hr-fix /> {% for c in comments %}
     <div class="comment-content">
-      <h3>{{c.author}}</h3>
-    {{ c.combody | safe}}
-    <a class="add-comment" href="/blog/{{c.key().id()}}/editcomment">Edit Comment</a>
-    <a class="add-comment" href="/blog/{{c.key().id()}}/deletecomment">Delete Comment</a>
+        <h3 class="color-mute">{{c.author}}</h3> {{ c.combody | safe}}
+        <a class="add-comment" href="/blog/{{c.key().id()}}/editcomment">Edit Comment</a>
+        <a class="add-comment" href="/blog/{{c.key().id()}}/deletecomment">Delete Comment</a>
     </div>
     <br></br>
     {% endfor %}
