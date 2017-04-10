@@ -18,6 +18,10 @@ a{
 a:hover{
   color: #1DE9B6;
 }
+.upvote{
+  margin-right: 21em;
+  margin-left: 6em;
+}
 .add-comment{
   width: 14%;
   font-size: x-small;
@@ -95,6 +99,7 @@ a:hover{
     border-bottom: 1px solid rgba(255,255,255, 0.5); /* you may match this border with the right border of the <div>*/
 }
 .post-content{
+  display: flex;
   margin-bottom: 2em;
   margin-top: 2em;
 }

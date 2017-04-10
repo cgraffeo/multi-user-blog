@@ -152,6 +152,8 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add=True)
     last_modified = db.DateTimeProperty(auto_now=True)
     author = db.StringProperty(required=True)
+    likes = db.IntegerProperty()
+    liked_by = db.ListProperty(str)
 
     def render(self):
         self._render_text = self.content.replace('\n', '</br>')
@@ -201,7 +203,7 @@ class NewPost(BlogHandler):
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content,
-                     author=author)
+                     author=author, likes=0, liked_by=[])
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -217,7 +219,6 @@ class PostEdit(BlogHandler):
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
-            print("POST ID HERE1111111:", post_id)
             author = post.author
             currentUser = self.user.name
 
@@ -241,6 +242,76 @@ class PostEdit(BlogHandler):
             p.content = self.request.get('content')
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
+
+
+class LikePost(BlogHandler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            p = db.get(key)
+            author = p.author
+            currentUser = self.user.name
+
+            if author == currentUser or currentUser in p.liked_by:
+                error = "You can not like your own post, or like it more than once."
+                self.render('blogmain.html', error=error)
+            else:
+                p.likes += 1
+                p.liked_by.append(currentUser)
+                p.put()
+                self.redirect('/blog')
+
+
+class DeletePost(BlogHandler):
+    def get(self, post_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            key = db.Key.from_path('Post', int(post_id),
+                                   parent=blog_key())
+            post = db.get(key)
+            author = post.author
+            currentUser = self.user.name
+
+            if author == currentUser:
+                key = db.Key.from_path('Post', int(post_id),
+                                       parent=blog_key())
+                p = db.get(key)
+                p.delete()
+                time.sleep(0.1)
+
+                self.render('deletepost.html')
+            else:
+                error = "You must be the author of this post to delete it."
+                self.render('blogmain.html',
+                            error=error)
+
+
+class DeleteComment(BlogHandler):
+    def get(self, comment_id):
+        if not self.user:
+            self.redirect('/login')
+        else:
+            key = db.Key.from_path('Comment', int(comment_id),
+                                   parent=blog_key())
+            comment = db.get(key)
+            author = comment.author
+            currentUser = self.user.name
+
+            if author == currentUser:
+                key = db.Key.from_path('Comment', int(comment_id),
+                                       parent=blog_key())
+                c = db.get(key)
+                c.delete()
+                time.sleep(0.1)
+
+                self.render('deletecomment.html')
+            else:
+                error = "You must be the author of this comment to delete it."
+                self.render('blogmain.html',
+                            error=error)
 
 
 class CommentEdit(BlogHandler):
@@ -412,9 +483,12 @@ app = webapp2.WSGIApplication([('/', HomePage),
                               ('/blog?', BlogMain),
                               ('/blog/([0-9]+)', PostPage),
                               ('/blog/([0-9]+)/editpost', PostEdit),
+                              ('/blog/([0-9]+)/likepost', LikePost),
+                              ('/blog/([0-9]+)/deletepost', DeletePost),
                               ('/blog/newpost', NewPost),
                               ('/blog/([0-9]+)/comment', NewComment),
                               ('/blog/([0-9]+)/editcomment', CommentEdit),
+                              ('/blog/([0-9]+)/deletecomment', DeleteComment),
                               ('/signup', Register),
                               ('/login', Login),
                               ('/logout', LogOut),

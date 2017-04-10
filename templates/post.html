@@ -4,6 +4,7 @@
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
             <p class="author">Author: {{p.author}}</p>
             <a href="/blog/{{p.key().id()}}/editpost">Edit Post</a>
+            <a href="/blog/{{p.key().id()}}/deletepost">Delete Post</a>
         </div>
         <div class="post-date">
             {{p.created.strftime("%b %d, %Y")}}
@@ -11,7 +12,13 @@
     </div>
     <hr class="hr-fix" />
     <div class="post-content">
+      <div class="upvote">
+        <a href="/blog/{{p.key().id()}}/likepost">Like</a>
+        <p>{{p.likes}}</p>
+      </div>
+      <div class="post-text">
         {{p._render_text | safe}}
+      </div>
     </div>
     <a class="add-comment" href="/blog/{{p.key().id()}}/comment">Add a comment</a>
     <hr class=hr-fix />
@@ -20,6 +27,7 @@
       <h3>{{c.author}}</h3>
     {{ c.combody | safe}}
     <a class="add-comment" href="/blog/{{c.key().id()}}/editcomment">Edit Comment</a>
+    <a class="add-comment" href="/blog/{{c.key().id()}}/deletecomment">Delete Comment</a>
     </div>
     <br></br>
     {% endfor %}
