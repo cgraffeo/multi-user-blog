@@ -3,8 +3,8 @@
         <div class="post-title">
             <a class="login-link" href="/blog/{{p.key().id()}}">{{p.subject}}</a>
             <p class="author">Author: {{p.author}}</p>
-            <a href="/blog/{{p.key().id()}}/editpost">Edit Post</a>
-            <a href="/blog/{{p.key().id()}}/deletepost">Delete Post</a>
+              <a href="/blog/{{p.key().id()}}/editpost">Edit Post</a>
+              <a href="/blog/{{p.key().id()}}/deletepost">Delete Post</a>
         </div>
         <div class="post-date">
             {{p.created.strftime("%b %d, %Y")}}
@@ -13,7 +13,9 @@
     <hr class="hr-fix" />
     <div class="post-content">
       <div class="upvote">
-        <a href="/blog/{{p.key().id()}}/likepost">Like</a>
+        <a class="like-post" href="/blog/{{p.key().id()}}/likepost">
+          <i class="fa fa-chevron-circle-up" aria-hidden="true"></i>
+        </a>
         <p>{{p.likes}}</p>
       </div>
       <div class="post-text">

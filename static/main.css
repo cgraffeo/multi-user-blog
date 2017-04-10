@@ -18,7 +18,12 @@ a{
 a:hover{
   color: #1DE9B6;
 }
+.like-post{
+  margin-right: 10px;
+}
 .upvote{
+  display: flex;
+  align-items: center;
   margin-right: 21em;
   margin-left: 6em;
 }
