@@ -7,7 +7,7 @@ Multi User Blog is a web application built in python for the Udacity Full Stack 
 ```
 $ git clone https://github.com/cgraffeo/multi-user-blog
 $ cd multi-user-blog
-$ dev_appserver.py
+$ dev_appserver.py .
 ```
 ## Project will be available on https://localhost:8080
 ## Datastore will be available on https://localhost:8000
