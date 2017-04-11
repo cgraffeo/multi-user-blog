@@ -18,6 +18,9 @@ a{
 a:hover{
   color: #1DE9B6;
 }
+.post-text{
+  width: 57%;
+}
 .color-mute{
   color: rgba(255, 255, 255, 0.5);
 }
