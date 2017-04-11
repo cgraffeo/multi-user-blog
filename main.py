@@ -382,7 +382,7 @@ class CommentEdit(BlogHandler):
                 key = db.Key.from_path('Comment', int(comment_id),
                                        parent=blog_key())
                 c = db.get(key)
-                c.combody = self.request.get('subject')
+                c.combody = self.request.get('combody')
                 c.put()
                 time.sleep(0.1)
                 self.redirect('/blog')
