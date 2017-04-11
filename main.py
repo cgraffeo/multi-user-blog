@@ -202,10 +202,12 @@ class NewPost(BlogHandler):
             self.render('newpost.html')
         else:
             self.redirect('/login')
+            return
 
     def post(self):
         if not self.user:
             self.redirect('/blog')
+            return
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -216,6 +218,7 @@ class NewPost(BlogHandler):
                      author=author, likes=0, liked_by=[])
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
+            return
         else:
             error = "New posts must contain a subject and content!"
             self.render('newpost.html', subject=subject, content=content,
@@ -226,6 +229,7 @@ class PostEdit(BlogHandler):
     def get(self, post_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
@@ -245,19 +249,32 @@ class PostEdit(BlogHandler):
     def post(self, post_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-            p = db.get(key)
-            p.subject = self.request.get('subject')
-            p.content = self.request.get('content')
-            p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            post = db.get(key)
+            author = post.author
+            currentUser = self.user.name
+
+            if author == currentUser:
+                key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+                p = db.get(key)
+                p.subject = self.request.get('subject')
+                p.content = self.request.get('content')
+                p.put()
+                self.redirect('/blog/%s' % str(p.key().id()))
+                return
+            else:
+                error = "You must be the author of this post to edit"
+                self.render('blogmain.html',
+                            error=error)
 
 
 class LikePost(BlogHandler):
     def get(self, post_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             p = db.get(key)
@@ -265,7 +282,7 @@ class LikePost(BlogHandler):
             currentUser = self.user.name
 
             if author == currentUser or currentUser in p.liked_by:
-                error = "You can not like your own post, or like it more than once."
+                error = "You can't like your post, or like it more than once."
                 self.render('blogmain.html', error=error)
             else:
                 p.likes += 1
@@ -278,6 +295,7 @@ class DeletePost(BlogHandler):
     def get(self, post_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Post', int(post_id),
                                    parent=blog_key())
@@ -303,6 +321,7 @@ class DeleteComment(BlogHandler):
     def get(self, comment_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
@@ -328,6 +347,7 @@ class CommentEdit(BlogHandler):
     def get(self, comment_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
@@ -350,15 +370,27 @@ class CommentEdit(BlogHandler):
     def post(self, comment_id):
         if not self.user:
             self.redirect('/login')
+            return
         else:
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
-            c = db.get(key)
-            c.combody = self.request.get('combody')
-            c.put()
-            time.sleep(0.1)
+            comment = db.get(key)
+            author = comment.author
+            currentUser = self.user.name
 
-            self.redirect('/blog')
+            if author == currentUser:
+                key = db.Key.from_path('Comment', int(comment_id),
+                                       parent=blog_key())
+                c = db.get(key)
+                c.combody = self.request.get('subject')
+                c.put()
+                time.sleep(0.1)
+                self.redirect('/blog')
+                return
+            else:
+                error = "You must be the author of this comment to edit"
+                self.render('blogmain.html',
+                            error=error)
 
 
 class NewComment(BlogHandler):
@@ -367,10 +399,12 @@ class NewComment(BlogHandler):
             self.render('newcomment.html')
         else:
             self.redirect('/login')
+            return
 
     def post(self, post_id):
         if not self.user:
             self.redirect('/blog')
+            return
 
         combody = self.request.get('combody')
 
@@ -388,6 +422,7 @@ class NewComment(BlogHandler):
                         author=author)
             c.put()
             self.redirect('/blog/%s' % str(post_id))
+            return
         else:
             error = "New comments must contain a subject and content!"
             self.render('newcomment.html',
@@ -469,6 +504,7 @@ class Login(BlogHandler):
         if u:
             self.login(u)
             self.redirect('/blog')
+            return
         else:
             msg = 'Invalid Login'
             self.render('login.html', error=msg)
