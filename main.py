@@ -211,7 +211,7 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
-        author = self.request.get('author')
+        author = self.user.name
 
         if subject and content:
             p = Post(parent=blog_key(), subject=subject, content=content,
@@ -233,12 +233,13 @@ class PostEdit(BlogHandler):
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
+            if not post:
+                self.error(404)
+                return
             author = post.author
             currentUser = self.user.name
 
             if author == currentUser:
-                key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-                post = db.get(key)
                 self.render('editpost.html', subject=post.subject,
                             content=post.content)
             else:
@@ -253,16 +254,18 @@ class PostEdit(BlogHandler):
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
+            if not post:
+                self.error(404)
+                return
             author = post.author
             currentUser = self.user.name
 
             if author == currentUser:
-                key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-                p = db.get(key)
-                p.subject = self.request.get('subject')
-                p.content = self.request.get('content')
-                p.put()
-                self.redirect('/blog/%s' % str(p.key().id()))
+                if self.request.get('subject') and self.request.get('content'):
+                    post.subject = self.request.get('subject')
+                    post.content = self.request.get('content')
+                    post.put()
+                self.redirect('/blog/%s' % str(post.key().id()))
                 return
             else:
                 error = "You must be the author of this post to edit"
@@ -278,6 +281,9 @@ class LikePost(BlogHandler):
         else:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             p = db.get(key)
+            if not p:
+                self.error(404)
+                return
             author = p.author
             currentUser = self.user.name
 
@@ -300,6 +306,9 @@ class DeletePost(BlogHandler):
             key = db.Key.from_path('Post', int(post_id),
                                    parent=blog_key())
             post = db.get(key)
+            if not post:
+                self.error(404)
+                return
             author = post.author
             currentUser = self.user.name
 
@@ -326,14 +335,14 @@ class DeleteComment(BlogHandler):
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             comment = db.get(key)
+            if not comment:
+                self.error(404)
+                return
             author = comment.author
             currentUser = self.user.name
 
             if author == currentUser:
-                key = db.Key.from_path('Comment', int(comment_id),
-                                       parent=blog_key())
-                c = db.get(key)
-                c.delete()
+                comment.delete()
                 time.sleep(0.1)
 
                 self.render('deletecomment.html')
@@ -352,7 +361,9 @@ class CommentEdit(BlogHandler):
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             comment = db.get(key)
-            print("COMMENT ID HERE111111111:", comment_id)
+            if not comment:
+                self.error(404)
+                return
             author = comment.author
             currentUser = self.user.name
             combody = self.request.get('combody')
@@ -379,11 +390,9 @@ class CommentEdit(BlogHandler):
             currentUser = self.user.name
 
             if author == currentUser:
-                key = db.Key.from_path('Comment', int(comment_id),
-                                       parent=blog_key())
-                c = db.get(key)
-                c.combody = self.request.get('combody')
-                c.put()
+                if self.request.get('combody'):
+                    comment.combody = self.request.get('combody')
+                    comment.put()
                 time.sleep(0.1)
                 self.redirect('/blog')
                 return
@@ -411,7 +420,7 @@ class NewComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id),
                                parent=blog_key())
         post = db.get(key)
-        author = self.request.get('author')
+        author = self.user.name
 
         if not post:
             self.error(404)
