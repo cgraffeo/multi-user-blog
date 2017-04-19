@@ -18,6 +18,9 @@ a{
 a:hover{
   color: #1DE9B6;
 }
+.item-changed{
+  color:#1DE9B6;
+}
 .post-text{
   width: 57%;
 }
